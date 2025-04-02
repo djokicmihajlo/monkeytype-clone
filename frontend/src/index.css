@@ -116,12 +116,46 @@ body {
   gap: 1.5rem;
 }
 
+.test-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  background-color: var(--bg-secondary);
+  border-radius: 4px;
+}
+
 .timer {
   font-size: 1.5rem;
-  text-align: center;
   padding: 0.5rem;
+}
+
+.duration-options {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.duration-option {
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--neutral-color);
+  background: none;
+  color: var(--text-primary);
   border-radius: 4px;
-  background-color: var(--bg-secondary);
+  cursor: pointer;
+  font-family: var(--font-family);
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.duration-option:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.duration-option.selected {
+  border-color: var(--accent-color);
+  background-color: var(--accent-color);
+  color: #000;
 }
 
 .word-display {
@@ -129,6 +163,20 @@ body {
   padding: 2rem;
   border-radius: 8px;
   min-height: 200px;
+  display: flex;
+  flex-direction: column;
+}
+
+.test-instructions {
+  margin-bottom: 1rem;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.start-typing-message {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: var(--accent-color);
 }
 
 .words-container {
@@ -161,9 +209,19 @@ body {
 }
 
 .typing-input {
-  position: absolute;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   opacity: 0;
-  pointer-events: none;
+  cursor: default;
+  z-index: 1;
+}
+
+.input-container,
+.fake-input-overlay {
+  display: none;
 }
 
 /* Results Screen Styles */
@@ -262,4 +320,17 @@ body {
   .word-display {
     padding: 1rem;
   }
+}
+
+.info-section {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--neutral-color);
+}
+
+.wpm-explanation {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  text-align: center;
+  font-style: italic;
 }

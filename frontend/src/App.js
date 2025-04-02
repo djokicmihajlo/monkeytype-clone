@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import './App.css';
-import StartScreen from './components/StartScreen';
 import TestScreen from './components/TestScreen';
 import ResultsScreen from './components/ResultsScreen';
 
@@ -10,9 +9,13 @@ function App() {
   const [testCompleted, setTestCompleted] = useState(false);
   const [testResults, setTestResults] = useState(null);
   const [theme, setTheme] = useState('dark'); // 'dark' or 'light'
+  const [testKey, setTestKey] = useState(0);
 
-  const startTest = (duration) => {
+  const handleDurationChange = (duration) => {
     setTestDuration(duration);
+  };
+
+  const handleTestStart = () => {
     setIsTestRunning(true);
     setTestCompleted(false);
     setTestResults(null);
@@ -27,6 +30,8 @@ function App() {
   const handleTryAgain = () => {
     setTestCompleted(false);
     setTestResults(null);
+    setIsTestRunning(false);
+    setTestKey(prev => prev + 1);
   };
 
   const toggleTheme = () => {
@@ -40,18 +45,16 @@ function App() {
       </div>
 
       <div className="container">
-        {!isTestRunning && !testCompleted && (
-          <StartScreen onStartTest={startTest} />
-        )}
-        
-        {isTestRunning && (
+        {!testCompleted ? (
           <TestScreen 
+            key={testKey}
             duration={testDuration}
+            isTestRunning={isTestRunning}
+            onTestStart={handleTestStart}
             onTestComplete={handleTestComplete}
+            onDurationChange={handleDurationChange}
           />
-        )}
-        
-        {!isTestRunning && testCompleted && (
+        ) : (
           <ResultsScreen 
             results={testResults}
             onTryAgain={handleTryAgain}

@@ -1,7 +1,7 @@
 import React from 'react';
 
 const ResultsScreen = ({ results, onTryAgain }) => {
-  const { wpm, accuracy, correctChars, incorrectChars } = results;
+  const { wpm, accuracy, correctChars, incorrectChars, completedWords } = results;
   
   return (
     <div className="results-screen">
@@ -16,6 +16,11 @@ const ResultsScreen = ({ results, onTryAgain }) => {
         <div className="result-item">
           <span className="result-label">Accuracy:</span>
           <span className="result-value">{accuracy}%</span>
+        </div>
+        
+        <div className="result-item">
+          <span className="result-label">Words Completed:</span>
+          <span className="result-value">{completedWords}</span>
         </div>
         
         <div className="stats-section">
@@ -36,6 +41,12 @@ const ResultsScreen = ({ results, onTryAgain }) => {
               <span className="stat-value">{correctChars + incorrectChars}</span>
             </div>
           </div>
+        </div>
+        
+        <div className="info-section">
+          <p className="wpm-explanation">
+            WPM is calculated as: (correct characters typed ÷ 5) × (60 ÷ time in seconds)
+          </p>
         </div>
       </div>
       
