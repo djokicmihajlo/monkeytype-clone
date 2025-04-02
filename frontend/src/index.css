@@ -334,3 +334,10 @@ body {
   text-align: center;
   font-style: italic;
 }
+
+.typing-help {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+  text-align: center;
+}

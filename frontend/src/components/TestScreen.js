@@ -10,6 +10,8 @@ const TestScreen = ({ duration, isTestRunning, onTestStart, onTestComplete, onDu
   const [incorrectChars, setIncorrectChars] = useState(0);
   const [testWords, setTestWords] = useState([]);
   const [completedWords, setCompletedWords] = useState(0);  // Track completed words for WPM
+  // Keep track of all input for each word to restore when going back
+  const [wordInputs, setWordInputs] = useState([]);
   const inputRef = useRef(null);
   const durations = [15, 30, 60];
 
@@ -85,6 +87,7 @@ const TestScreen = ({ duration, isTestRunning, onTestStart, onTestComplete, onDu
     setCorrectChars(0);
     setIncorrectChars(0);
     setCompletedWords(0);
+    setWordInputs([]);
   };
 
   const handleInputChange = (e) => {
@@ -109,6 +112,11 @@ const TestScreen = ({ duration, isTestRunning, onTestStart, onTestComplete, onDu
       
       // Ignore empty input or if test hasn't started
       if (!currentInput.trim() || !isTestRunning) return;
+      
+      // Save the current word input
+      const newWordInputs = [...wordInputs];
+      newWordInputs[activeWordIndex] = currentInput;
+      setWordInputs(newWordInputs);
       
       const currentWord = testWords[activeWordIndex];
       const typedWord = currentInput.trim();
@@ -147,6 +155,53 @@ const TestScreen = ({ duration, isTestRunning, onTestStart, onTestComplete, onDu
       setActiveWordIndex(prev => prev + 1);
       setCurrentInput('');
     }
+    // Handle backspace to go to previous word
+    else if (e.key === 'Backspace' && currentInput === '' && activeWordIndex > 0) {
+      // Prevent default to avoid conflicts with normal backspace behavior
+      e.preventDefault();
+      
+      // Move to previous word
+      const previousIndex = activeWordIndex - 1;
+      setActiveWordIndex(previousIndex);
+      
+      // Restore previous word input if it exists
+      if (wordInputs[previousIndex]) {
+        setCurrentInput(wordInputs[previousIndex]);
+        
+        // Remove this word's character counts from the totals
+        const prevWord = testWords[previousIndex];
+        const prevTyped = wordInputs[previousIndex];
+        
+        let correctCount = 0;
+        let incorrectCount = 0;
+        
+        // Recalculate the character counts for the previous word
+        let i = 0;
+        while (i < prevTyped.length && i < prevWord.length && prevTyped[i] === prevWord[i]) {
+          correctCount++;
+          i++;
+        }
+        
+        if (i < prevTyped.length) {
+          incorrectCount += prevTyped.length - i;
+        }
+        
+        if (prevWord.length > prevTyped.length) {
+          incorrectCount += prevWord.length - prevTyped.length;
+        }
+        
+        // Subtract these counts from the totals
+        setCorrectChars(prev => prev - correctCount);
+        setIncorrectChars(prev => prev - incorrectCount);
+        
+        // Decrement completed words if this was a correctly typed word
+        if (prevWord === prevTyped.trim()) {
+          setCompletedWords(prev => prev - 1);
+        }
+      } else {
+        setCurrentInput('');
+      }
+    }
   };
 
   return (
@@ -178,6 +233,11 @@ const TestScreen = ({ duration, isTestRunning, onTestStart, onTestComplete, onDu
         <div className="test-instructions">
           {!isTestRunning && (
             <div className="start-typing-message">Start typing to begin the test...</div>
+          )}
+          {isTestRunning && (
+            <div className="typing-help">
+              Press space to complete a word. Use backspace on an empty input to go back to previous word.
+            </div>
           )}
         </div>
         <WordDisplay 
